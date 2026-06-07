@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KDG - Birthday Ultimate Premium 🎂🌹</title>
+    <style>
+        @font-face {
+            font-family: 'MyKdgFont';
+            src: url('KDG-FONT.ttf') format('truetype');
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #010103; overflow: hidden; font-family: 'MyKdgFont', sans-serif; }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+
+        .ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10; pointer-events: none;
+        }
+
+        .stage {
+            position: absolute; width: 100%; height: 100%; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0; pointer-events: none; text-align: center;
+        }
+        .stage.active { opacity: 1; pointer-events: auto; }
+
+        .kdg-intro-logo {
+            width: 150px; height: auto; cursor: pointer;
+            filter: drop-shadow(0 0 25px rgba(0, 190, 255, 0.5));
+            animation: pulseLogo 3s ease-in-out infinite;
+        }
+        @keyframes pulseLogo {
+            0% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0, 190, 255, 0.4)); }
+            50% { transform: scale(1.12); filter: drop-shadow(0 0 35px rgba(0, 210, 255, 0.7)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0, 190, 255, 0.4)); }
+        }
+
+        .countdown-text { font-size: 7rem; font-weight: bold; color: #00bfff; text-shadow: 0 0 35px rgba(0, 190, 255, 0.7); }
+
+        .cake { position: relative; width: 240px; height: 220px; cursor: pointer; margin-top: 20px; }
+        .cake-tier { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .tier-bottom { width: 240px; height: 75px; bottom: 0; background: linear-gradient(to right, #1a0b2e, #3d1c5c, #1a0b2e); }
+        .tier-middle { width: 190px; height: 65px; bottom: 70px; background: linear-gradient(to right, #00bfff, #87cefa, #00bfff); }
+        .tier-top    { width: 135px; height: 55px; bottom: 130px; background: linear-gradient(to right, #00f5ff, #bdffff, #00f5ff); }
+        
+        .candle { position: absolute; width: 10px; height: 45px; background: #ffffff; left: 50%; transform: translateX(-50%); bottom: 180px; border-radius: 4px; }
+        .flame {
+            position: absolute; width: 16px; height: 26px; background: #ff9d00;
+            border-radius: 50% 50% 20% 20%; left: 50%; transform: translateX(-50%); bottom: 224px;
+            box-shadow: 0 0 20px #ff9d00, 0 0 40px #00bfff;
+            animation: flicker 0.6s infinite alternate; transition: opacity 0.3s ease;
+        }
+        @keyframes flicker { 0% { transform: translateX(-50%) scale(1); } 100% { transform: translateX(-48%) scale(1.1) rotate(2deg); } }
+        .flame.out { opacity: 0; }
+
+        .luxury-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(0, 190, 255, 0.3); border-radius: 28px; padding: 35px;
+            max-width: 460px; width: 92%; box-shadow: 0 30px 70px rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px); transform: scale(0.8); opacity: 0; 
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+        .stage.active .luxury-card { opacity: 1; transform: scale(1); }
+        .bday-title { font-size: 2rem; color: #00bfff; text-shadow: 0 2px 20px rgba(0,190,255,0.4); }
+        .bday-text { font-size: 1.1rem; line-height: 1.8; color: #ffffff; margin-bottom: 10px; }
+
+        .gift-trigger-btn {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; background: rgba(0, 190, 255, 0.08);
+            border: 1px solid rgba(0, 190, 255, 0.4); padding: 12px 28px;
+            border-radius: 50px; cursor: pointer; pointer-events: auto;
+            transition: all 0.4s ease; animation: pulseGift 2s infinite;
+        }
+        .gift-trigger-btn:hover {
+            background: rgba(0, 190, 255, 0.2);
+            border-color: #00bfff;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 190, 255, 0.4);
+        }
+        @keyframes pulseGift {
+            0% { box-shadow: 0 0 0 0 rgba(0, 190, 255, 0.4); }
+            70% { box-shadow: 0 0 15px 8px rgba(0, 190, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 190, 255, 0); }
+        }
+        .gift-logo { width: 55px; height: auto; object-fit: contain; }
+        .gift-text { color: #ffffff; font-size: 1.2rem; font-weight: bold; }
+
+        /* ✨ ستایلی تایپیستی بۆ دەقی Kurd Digital Gift */
+        .typing-container {
+            position: absolute;
+            bottom: 12%; /* ڕێک دەکەوێتە ژێر دڵەکە */
+            width: 100%;
+            text-align: center;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .brand-text {
+            font-size: 2.2rem;
+            color: #ffffff;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.6), 0 0 30px rgba(0, 191, 255, 0.3);
+            display: inline-block;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="mainCanvas"></canvas>
+
+    <div class="ui-layer">
+        <div class="stage active" id="stageLogo">
+            <img id="logoBtn" src="KDG-LOGO.png" alt="KDG Premium" class="kdg-intro-logo">
+        </div>
+
+        <div class="stage" id="stageCountdown">
+            <div class="countdown-text" id="countdownNum">3</div>
+        </div>
+
+        <div class="stage" id="stageCake">
+            <h2 style="color: #ffffff; font-size: 1.2rem; text-shadow: 0 0 10px #00bfff; margin-bottom: 20px;">هیوایەک بخوازەو کلیک لە کێکەکە بکە 🕯️</h2>
+            <div class="cake" id="cakeBtn">
+                <div class="flame" id="candleFlame"></div>
+                <div class="candle"></div>
+                <div class="cake-tier tier-top"></div>
+                <div class="cake-tier tier-middle"></div>
+                <div class="cake-tier tier-bottom"></div>
+            </div>
+        </div>
+
+        <div class="stage" id="stageText">
+            <div class="luxury-card" id="luxuryCard">
+                <h1 class="bday-title">ساڵڕۆژی لەدایکبوونت پیرۆز بێت! 🎉</h1>
+                <p class="bday-text">
+                    " ڕۆژی لەدایکبوونت، جوانترین و پیرۆزترین ڕۆژی مێژووە لای من. پێش ئەوەی پیرۆزبایی لە تۆ بکەم، پیرۆزبایی لە خۆم دەکەم کە خودا تۆی پێبەخشیم و ژیانمی بە بوونت ڕووناک کردەوە.
+لەم ڕۆژە تایبەتەدا پێت دەڵێم:
+•   تۆ تەنیا هاوسەفەرم نیت: تۆ نیشتمان, ئارامی و هۆکاری سەرەکی خەندەکانی منی.
+•   بەڵێنم بۆت: لەم ساڵە نوێیەی تەمەنتدا و لە تەواوی تەمەنمدا، هەمیشە وەک چیا لە پشتت دەبم و زیاتر لە دوێنێ خۆشم دەوێیت.
+•   هیوام بۆ تۆ: هیوادارم دڵە پاکەکەت هەمیشە لێوانلێو بێت لە دڵخۆشی، و چاوەکانت قەت ڕەنگی خەم نەبینن.
+تەمەنت درێژ بێت و سایەت هەمیشە بەسەر ژیانمەوە بمێنێت. ڕۆژی لەدایکبوونت پیرۆز بێت، تاقانەکەی دڵم
+."
+                </p>
+                
+                <div class="gift-trigger-btn" id="giftTrigger">
+                    <img src="KDG-LOGO.png" alt="KDG Standard" class="gift-logo">
+                    <span class="gift-text">دیارییەکە بکەرەوە</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="typing-container">
+        <span id="typingText" class="brand-text"></span>
+    </div>
+
+    <audio id="kdgAudio" loop preload="auto">
+        <source src="KDG-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const logoBtn = document.getElementById('logoBtn');
+        const cakeBtn = document.getElementById('cakeBtn');
+        const candleFlame = document.getElementById('candleFlame');
+        const countdownNum = document.getElementById('countdownNum');
+        const giftTrigger = document.getElementById('giftTrigger');
+        const kdgAudio = document.getElementById('kdgAudio');
+        const typingTextDiv = document.getElementById('typingText');
+
+        const stageLogo = document.getElementById('stageLogo');
+        const stageCountdown = document.getElementById('stageCountdown');
+        const stageCake = document.getElementById('stageCake');
+        const stageText = document.getElementById('stageText');
+
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        });
+
+        const flowerSrcs = ['flower1.png', 'flower2.png', 'flower3.png', 'flower4.png', 'flower5.png'];
+        const flowerImages = flowerSrcs.map(src => {
+            const img = new Image();
+            img.src = src;
+            return img;
+        });
+
+        const mainFlowerImg = new Image();
+        mainFlowerImg.src = 'main-flower.png';
+        
+        // 🔄 گۆڕاوەکانی تایبەت بە جووڵەی چەپکە گوڵەکە
+        let showMainFlower = false;
+        let mainFlowerAlpha = 0;
+        let mainFlowerScale = 0; // لە سفڕەوە دەستپێدەکات
+        let pulseTime = 0; // بۆ دروستکردنی لێدانی ڕیتمیک
+
+        let appState = 'intro'; 
+        let globalTime = 0;
+
+        const particles = [];
+        const maxParticles = 1600;
+
+        function heartX(t) { return 16 * Math.pow(Math.sin(t), 3); }
+        function heartY(t) { return -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)); }
+
+        for (let i = 0; i < maxParticles; i++) {
+            particles.push({
+                x: W / 2 + (Math.random() - 0.5) * 300, 
+                y: H / 2 + (Math.random() - 0.5) * 300,
+                tx: W / 2, 
+                ty: H / 2,
+                size: 0.6 + Math.random() * 1.8,
+                color: `hsla(${190 + Math.random() * 40}, 100%, ${65 + Math.random() * 20}%, `,
+                alpha: 0.3 + Math.random() * 0.7,
+                speed: 0.02 + Math.random() * 0.03,
+                vx: 0, 
+                vy: 0,
+                seed: Math.random() * 100
+            });
+        }
+
+        function setIntroTargets() {
+            particles.forEach(p => {
+                let angle = Math.random() * Math.PI * 2;
+                let radius = 110 + Math.random() * 130;
+                p.tx = W / 2 + Math.cos(angle) * radius;
+                p.ty = H / 2 + Math.sin(angle) * radius;
+            });
+        }
+        setIntroTargets();
+
+        function transformToHeart() {
+            appState = 'heart-form';
+            const scale = Math.min(W, H) * 0.22; 
+            particles.forEach((p, i) => {
+                const t = (i / particles.length) * Math.PI * 2;
+                p.tx = W / 2 + heartX(t) * scale / 16;
+                p.ty = H / 2 + heartY(t) * scale / 16;
+                p.vx = 0; 
+                p.vy = 0;
+                p.speed = 0.04; 
+            });
+        }
+
+        const explodingFlowers = [];
+        let isEmittingFlowers = false;
+
+        function emitFlowerBatch() {
+            if (appState !== 'flower-explosion') return;
+            
+            for (let i = 0; i < 30; i++) {
+                let angle = Math.random() * Math.PI * 2;
+                let speed = 4 + Math.random() * 12; 
+                explodingFlowers.push({
+                    x: W / 2,
+                    y: H / 2,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 35 + Math.random() * 65, 
+                    rot: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.1,
+                    alpha: 1.0,
+                    fadeSpeed: 0.003 + Math.random() * 0.004, 
+                    img: flowerImages[Math.floor(Math.random() * 5)]
+                });
+            }
+        }
+
+        // ⌨️ لۆجیکی نووسینی پیت بە پیت
+        function startTypingEffect() {
+            const fullText = "Kurd Digital Gift";
+            let index = 0;
+            typingTextDiv.innerText = "";
+            
+            let typingInterval = setInterval(() => {
+                if (index < fullText.length) {
+                    typingTextDiv.innerText += fullText.charAt(index);
+                    index++;
+                } else {
+                    clearInterval(typingInterval);
+                }
+            }, 150); 
+        }
+
+        function loop() {
+            ctx.fillStyle = '#010104';
+            ctx.fillRect(0, 0, W, H);
+            globalTime += 0.016;
+
+            particles.forEach(p => {
+                if (appState === 'scatter') {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vx *= 0.95;
+                    p.vy *= 0.95;
+                } else {
+                    p.x += (p.tx - p.x) * p.speed;
+                    p.y += (p.ty - p.y) * p.speed;
+                    p.x += Math.sin(globalTime + p.seed) * 0.2;
+                    p.y += Math.cos(globalTime * 0.8 + p.seed) * 0.15;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color + p.alpha + ")";
+                ctx.fill();
+            });
+
+            if (isEmittingFlowers && appState === 'flower-explosion') {
+                emitFlowerBatch(); 
+            }
+
+            if (explodingFlowers.length > 0) {
+                for (let i = explodingFlowers.length - 1; i >= 0; i--) {
+                    let f = explodingFlowers[i];
+                    f.x += f.vx;
+                    f.y += f.vy;
+                    f.rot += f.rotSpeed;
+                    f.alpha -= f.fadeSpeed;
+
+                    if (f.alpha <= 0) {
+                        explodingFlowers.splice(i, 1);
+                    } else {
+                        ctx.save();
+                        ctx.globalAlpha = f.alpha;
+                        ctx.translate(f.x, f.y);
+                        ctx.rotate(f.rot);
+                        ctx.drawImage(f.img, -f.size/2, -f.size/2, f.size, f.size);
+                        ctx.restore();
+                    }
+                }
+            }
+
+            // 👑 وێنەکێشانی چەپکە گوڵە گەورەکە بە لۆجیکی زووم و لێدان (Pulse)
+            if (showMainFlower) {
+                if (mainFlowerAlpha < 1) mainFlowerAlpha += 0.015; 
+                
+                // ١. سەرەتا لە زوومی 0 بۆ 1 گەورە دەبێتەوە
+                if (mainFlowerScale < 1) {
+                    mainFlowerScale += 0.02; 
+                } else {
+                    // ٢. کاتێک گەیشتە ١، دەست دەکات بە جووڵەی هەناسەدانی هێواش (Pulse)
+                    pulseTime += 0.025;
+                }
+
+                // حیسابکردنی لێدانی هێواش (بچووک و گەورەبوون لە نێوان 0.97 بۆ 1.03)
+                let currentPulseFactor = mainFlowerScale;
+                if (mainFlowerScale >= 1) {
+                    currentPulseFactor = 1 + Math.sin(pulseTime) * 0.03;
+                }
+
+                let baseSize = Math.min(W, H) * 0.28; 
+                let finalSize = baseSize * currentPulseFactor;
+
+                ctx.save();
+                ctx.globalAlpha = mainFlowerAlpha;
+                ctx.translate(W / 2, H / 2); 
+                ctx.drawImage(mainFlowerImg, -finalSize / 2, -finalSize / 2, finalSize, finalSize);
+                ctx.restore();
+            }
+
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        logoBtn.addEventListener('click', () => {
+            if (appState !== 'intro') return;
+            appState = 'scatter';
+            particles.forEach(p => {
+                let angle = Math.random() * Math.PI * 2;
+                let force = 15 + Math.random() * 20;
+                p.vx = Math.cos(angle) * force;
+                p.vy = Math.sin(angle) * force;
+            });
+
+            stageLogo.classList.remove('active');
+
+            setTimeout(() => {
+                appState = 'countdown';
+                stageCountdown.classList.add('active');
+                runCountdown();
+            }, 800);
+        });
+
+        function runCountdown() {
+            let count = 3;
+            let timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownNum.innerText = count;
+                    
+                    // 🎵 لێدانی موزیکەکە کاتێک ژمارەکە دەبێت بە 1
+                    if (count === 1) {
+                        kdgAudio.play().catch(err => console.log("Audio play blocked: ", err));
+                    }
+                } else {
+                    clearInterval(timer);
+                    stageCountdown.classList.remove('active');
+                    setTimeout(() => {
+                        appState = 'cake';
+                        stageCake.classList.add('active');
+                    }, 500);
+                }
+            }, 1000);
+        }
+
+        cakeBtn.addEventListener('click', () => {
+            if (appState !== 'cake') return;
+            candleFlame.classList.add('out');
+            transformToHeart();
+
+            setTimeout(() => {
+                stageCake.classList.remove('active');
+                setTimeout(() => {
+                    stageText.classList.add('active');
+                }, 400);
+            }, 800);
+        });
+
+        giftTrigger.addEventListener('click', () => {
+            if (isEmittingFlowers) return;
+
+            stageText.classList.remove('active');
+
+            appState = 'flower-explosion';
+            isEmittingFlowers = true;
+
+            particles.forEach(p => {
+                let angle = Math.random() * Math.PI * 2;
+                p.vx = Math.cos(angle) * 12;
+                p.vy = Math.sin(angle) * 12;
+            });
+
+            setTimeout(() => {
+                isEmittingFlowers = false; 
+                
+                setTimeout(() => {
+                    appState = 'final-show';
+                    transformToHeart(); 
+                    showMainFlower = true; 
+                    
+                    // ⌨️ دەستپێکردنی نووسینی پیت بە پیت ڕێک لەگەڵ جێگیربوونی دڵ و گوڵەکە
+                    setTimeout(() => {
+                        startTypingEffect();
+                    }, 400);
+
+                }, 800);
+            }, 4000);
+        });
+    </script>
+</body>
+</html>
