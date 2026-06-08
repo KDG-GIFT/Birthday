@@ -199,7 +199,6 @@
         let showMainFlower = false;
         let mainFlowerAlpha = 0;
         let mainFlowerScale = 0; 
-        let pulseTime = 0; 
 
         let appState = 'intro'; 
         let globalTime = 0;
@@ -239,7 +238,6 @@
         function transformToHeart() {
             appState = 'heart-form';
             
-            // 📱 ئەگەر شاشە لە 768 پیکسڵ بچووکتر بوو (مۆبایل)، سکەیڵی دڵەکە دەکەینە 0.42، ئەگەر کۆمپیوتەر بوو 0.22
             let isMobile = window.innerWidth < 768;
             const scale = Math.min(W, H) * (isMobile ? 0.42 : 0.22); 
             
@@ -341,25 +339,18 @@
                 }
             }
 
-            // 👑 وێنەکێشانی چەپکە گوڵە گەورەکە بە لۆجیکی نوێی مۆبایل
+            // 👑 وێنەکێشانی چەپکە گوڵەکەی ناو دڵ بە جێگیری (سابت)
             if (showMainFlower) {
                 if (mainFlowerAlpha < 1) mainFlowerAlpha += 0.015; 
                 
+                // تەنها یەکجار گەورە دەبێتەوە تا دەگاتە ١، پاشان جێگیر دەبێت بەبێ هیچ لێدانێک (No Pulse)
                 if (mainFlowerScale < 1) {
                     mainFlowerScale += 0.02; 
-                } else {
-                    pulseTime += 0.025;
                 }
 
-                let currentPulseFactor = mainFlowerScale;
-                if (mainFlowerScale >= 1) {
-                    currentPulseFactor = 1 + Math.sin(pulseTime) * 0.03;
-                }
-
-                // 📱 لێرەشدا پشکنین دەکەین ئەگەر مۆبایل بوو، قەبارەی چەپکە گوڵەکە گەورەتر دەکەین بۆ 0.55
                 let isMobile = window.innerWidth < 768;
                 let baseSize = Math.min(W, H) * (isMobile ? 0.55 : 0.28); 
-                let finalSize = baseSize * currentPulseFactor;
+                let finalSize = baseSize * mainFlowerScale; // قەبارەی کۆتایی بە سابتی دەمێنێتەوە
 
                 ctx.save();
                 ctx.globalAlpha = mainFlowerAlpha;
