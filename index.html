@@ -90,10 +90,9 @@
         .gift-logo { width: 55px; height: auto; object-fit: contain; }
         .gift-text { color: #ffffff; font-size: 1.2rem; font-weight: bold; }
 
-        /* ✨ ستایلی تایپیستی بۆ دەقی Kurd Digital Gift */
         .typing-container {
             position: absolute;
-            bottom: 12%; /* ڕێک دەکەوێتە ژێر دڵەکە */
+            bottom: 12%; 
             width: 100%;
             text-align: center;
             z-index: 5;
@@ -197,11 +196,10 @@
         const mainFlowerImg = new Image();
         mainFlowerImg.src = 'main-flower.png';
         
-        // 🔄 گۆڕاوەکانی تایبەت بە جووڵەی چەپکە گوڵەکە
         let showMainFlower = false;
         let mainFlowerAlpha = 0;
-        let mainFlowerScale = 0; // لە سفڕەوە دەستپێدەکات
-        let pulseTime = 0; // بۆ دروستکردنی لێدانی ڕیتمیک
+        let mainFlowerScale = 0; 
+        let pulseTime = 0; 
 
         let appState = 'intro'; 
         let globalTime = 0;
@@ -240,7 +238,11 @@
 
         function transformToHeart() {
             appState = 'heart-form';
-            const scale = Math.min(W, H) * 0.22; 
+            
+            // 📱 ئەگەر شاشە لە 768 پیکسڵ بچووکتر بوو (مۆبایل)، سکەیڵی دڵەکە دەکەینە 0.42، ئەگەر کۆمپیوتەر بوو 0.22
+            let isMobile = window.innerWidth < 768;
+            const scale = Math.min(W, H) * (isMobile ? 0.42 : 0.22); 
+            
             particles.forEach((p, i) => {
                 const t = (i / particles.length) * Math.PI * 2;
                 p.tx = W / 2 + heartX(t) * scale / 16;
@@ -275,7 +277,6 @@
             }
         }
 
-        // ⌨️ لۆجیکی نووسینی پیت بە پیت
         function startTypingEffect() {
             const fullText = "Kurd Digital Gift";
             let index = 0;
@@ -340,25 +341,24 @@
                 }
             }
 
-            // 👑 وێنەکێشانی چەپکە گوڵە گەورەکە بە لۆجیکی زووم و لێدان (Pulse)
+            // 👑 وێنەکێشانی چەپکە گوڵە گەورەکە بە لۆجیکی نوێی مۆبایل
             if (showMainFlower) {
                 if (mainFlowerAlpha < 1) mainFlowerAlpha += 0.015; 
                 
-                // ١. سەرەتا لە زوومی 0 بۆ 1 گەورە دەبێتەوە
                 if (mainFlowerScale < 1) {
                     mainFlowerScale += 0.02; 
                 } else {
-                    // ٢. کاتێک گەیشتە ١، دەست دەکات بە جووڵەی هەناسەدانی هێواش (Pulse)
                     pulseTime += 0.025;
                 }
 
-                // حیسابکردنی لێدانی هێواش (بچووک و گەورەبوون لە نێوان 0.97 بۆ 1.03)
                 let currentPulseFactor = mainFlowerScale;
                 if (mainFlowerScale >= 1) {
                     currentPulseFactor = 1 + Math.sin(pulseTime) * 0.03;
                 }
 
-                let baseSize = Math.min(W, H) * 0.28; 
+                // 📱 لێرەشدا پشکنین دەکەین ئەگەر مۆبایل بوو، قەبارەی چەپکە گوڵەکە گەورەتر دەکەین بۆ 0.55
+                let isMobile = window.innerWidth < 768;
+                let baseSize = Math.min(W, H) * (isMobile ? 0.55 : 0.28); 
                 let finalSize = baseSize * currentPulseFactor;
 
                 ctx.save();
@@ -397,8 +397,6 @@
                 count--;
                 if (count > 0) {
                     countdownNum.innerText = count;
-                    
-                    // 🎵 لێدانی موزیکەکە کاتێک ژمارەکە دەبێت بە 1
                     if (count === 1) {
                         kdgAudio.play().catch(err => console.log("Audio play blocked: ", err));
                     }
@@ -448,7 +446,6 @@
                     transformToHeart(); 
                     showMainFlower = true; 
                     
-                    // ⌨️ دەستپێکردنی نووسینی پیت بە پیت ڕێک لەگەڵ جێگیربوونی دڵ و گوڵەکە
                     setTimeout(() => {
                         startTypingEffect();
                     }, 400);
